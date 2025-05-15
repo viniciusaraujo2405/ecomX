@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { LojaController } from '../controllers/loja_controller';
-import { authenticateJWT } from '../auth.middleware';
+import { authenticateJWT } from '../auth_middleware';
 
 const router = Router();
 const controller = new LojaController();
