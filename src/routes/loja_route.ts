@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { LojaController } from '../controllers/loja_controller';
+import { authenticateJWT } from '../auth.middleware';
 
 const router = Router();
 const controller = new LojaController();
 
-router.post('/', controller.create);
+router.post('/', authenticateJWT, controller.create);
 router.get('/', controller.findAll);
 router.get('/:id', async (req, res) => {
 	try {
