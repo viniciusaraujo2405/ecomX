@@ -5,10 +5,12 @@ import usuarioRouter from './routes/usuario_route';
 import lojaRouter from './routes/loja_route';
 import authRouter from './routes/auth_route';
 import {authenticateJWT} from './auth_middleware';
+import { setupSwagger } from './schemas/swagger';
 
 dotenv.config();
 
 const app = express();
+setupSwagger(app);
 const port = process.env.PORT || 3000;
 
 // Middleware para ler JSON no corpo da requisição
