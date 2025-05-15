@@ -1,10 +1,10 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
+import dotenv from 'dotenv';
 
-import usuarioRoutes from './routes/usuario.routes';
-import lojaRoutes from './routes/loja.routes';
-import authRoutes from './routes/auth.routes';
+import usuarioRoutes from './routes/usuario_route';
+import lojaRoutes from './routes/loja_route';
+import authRoutes from './routes/auth_route';
 
 dotenv.config();
 
@@ -16,16 +16,16 @@ app.use(cors());
 app.use(express.json());
 
 // Rotas
-app.use('/usuarios', usuarioRoutes);
-app.use('/lojas', lojaRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/lojas', lojaRoutes);
+app.use('/api/auth', authRoutes);
 
-// Rota base
+// Rota principal (opcional)
 app.get('/', (req, res) => {
-  res.send('API do EcomX rodando com sucesso!');
+  res.send('🚀 API EcomX está rodando!');
 });
 
-// Start do servidor
+// Iniciar o servidor
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`✅ Servidor rodando na porta ${PORT}`);
 });
