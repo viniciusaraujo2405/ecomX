@@ -1,0 +1,158 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum tipoUsuario {
+  LOJISTA
+  ADMINISTRADOR
+  CONSUMIDOR
+}
+
+enum pedidoStatus {
+  PENDENTE
+  PAGO
+  ENVIADO
+  ENTREGUE
+  CANCELADO
+}
+
+enum metodoPagamento {
+  CARTAO
+  BOLETO
+  PIX
+}
+
+enum pagamentoStatus {
+  PENDENTE
+  APROVADO
+  RECUSADO
+}
+
+
+model Usuario {
+  id          String       @id @default(uuid())
+  nome        String
+  email       String       @unique
+  senha       String
+  tipo        tipoUsuario
+  enderecos   Endereco[]
+  lojas       Loja[]       @relation("LojistaLoja")
+  pedidos     Pedido[]     @relation("ConsumidorPedido")
+  carrinho    Carrinho?
+  avaliacoes  Avaliacao[]
+  notificacoes Notificacao[]
+}
+
+model Loja {
+  id         String     @id @default(uuid())
+  nome       String
+  descricao  String
+  idLojista  String     @unique
+  lojista    Usuario    @relation("LojistaLoja", fields: [idLojista], references: [id])
+  produtos   Produto[]
+  pedidos    Pedido[]
+}
+
+model Produto {
+  id          String       @id @default(uuid())
+  nome        String
+  descricao   String
+  estoque     Int
+  preco       Float
+  idLoja      String
+  idCategoria String
+  loja        Loja         @relation(fields: [idLoja], references: [id])
+  categoria   Categoria    @relation(fields: [idCategoria], references: [id])
+  itens       ItemPedido[]
+  avaliacoes  Avaliacao[]
+  carrinhoItens CarrinhoItem[]
+}
+
+model Categoria {
+  id         String     @id @default(uuid())
+  nome       String
+  descricao  String
+  produtos   Produto[]
+}
+
+model Pedido {
+  id            String        @id @default(uuid())
+  idConsumidor  String
+  idLoja        String
+  idPagamento   String  @unique
+  idEndereco    String
+  status        pedidoStatus
+  consumidor    Usuario       @relation("ConsumidorPedido", fields: [idConsumidor], references: [id])
+  loja          Loja          @relation(fields: [idLoja], references: [id])
+  pagamento     Pagamento     @relation(fields: [idPagamento], references: [id])
+  endereco      Endereco      @relation(fields: [idEndereco], references: [id])
+  itens         ItemPedido[]
+}
+
+model ItemPedido {
+  id         String    @id @default(uuid())
+  idPedido   String
+  idProduto  String
+  quantidade Int
+  pedido     Pedido    @relation(fields: [idPedido], references: [id])
+  produto    Produto   @relation(fields: [idProduto], references: [id])
+}
+
+model Pagamento {
+  id        String           @id @default(uuid())
+  metodo    metodoPagamento
+  valor     Float
+  status    pagamentoStatus
+  pedido    Pedido?
+}
+
+model Carrinho {
+  id         String    @id @default(uuid())
+  idUsuario  String    @unique
+  usuario    Usuario   @relation(fields: [idUsuario], references: [id])
+  itens      CarrinhoItem[]
+}
+
+model CarrinhoItem {
+  id         String   @id @default(uuid())
+  idCarrinho String
+  idProduto  String
+  quantidade Int
+  carrinho   Carrinho @relation(fields: [idCarrinho], references: [id])
+  produto    Produto  @relation(fields: [idProduto], references: [id])
+}
+
+model Endereco {
+  id         String   @id @default(uuid())
+  idUsuario  String
+  rua        String
+  cidade     String
+  estado     String
+  cep        String
+  usuario    Usuario  @relation(fields: [idUsuario], references: [id])
+  pedidos    Pedido[]
+}
+
+model Avaliacao {
+  id         String   @id @default(uuid())
+  idProduto  String
+  idUsuario  String
+  nota       Int
+  comentario String
+  produto    Produto  @relation(fields: [idProduto], references: [id])
+  usuario    Usuario  @relation(fields: [idUsuario], references: [id])
+}
+
+model Notificacao {
+  id         String   @id @default(uuid())
+  idUsuario  String
+  mensagem   String
+  lida       Boolean  @default(false)
+  data       DateTime
+  usuario    Usuario  @relation(fields: [idUsuario], references: [id])
+}
