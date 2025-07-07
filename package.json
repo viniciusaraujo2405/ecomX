@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@types/argon2": "^0.14.1",
-    "@types/cors": "^2.8.18",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.18",
@@ -23,7 +23,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
-    "seed": "ts-node prisma/seed.ts",
+    "seed": "ts-node src/seed.ts",
     "dev": "tsx watch src/server.ts"
   },
   "prisma": {

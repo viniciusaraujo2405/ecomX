@@ -1,26 +1,19 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from 'react-router-dom';
 
-function App() {
+// Importa as páginas que serão usadas nas rotas
+import ProdutosPage from './pages/ProdutosPage';
+import AuthPage from './pages/AuthPage';
+
+// Este é o componente principal que gerencia a navegação
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      {/* Rota para a página inicial, que exibe a lista de produtos */}
+      <Route path="/" element={<ProdutosPage />} />
+
+      {/* Rota para a página de autenticação (login/cadastro) */}
+      <Route path="/auth" element={<AuthPage />} />
+    </Routes>
   );
 }
-
-export default App;

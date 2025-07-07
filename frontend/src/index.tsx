@@ -1,19 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+// 1. Importe o BrowserRouter
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+// Importe seu CSS global se necessário, ex: import './index.css';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+// 2. Envolva o componente <App /> com o <BrowserRouter>
+// É isso que disponibiliza o sistema de rotas para toda a sua aplicação.
+// O erro acontece porque este <BrowserRouter> provavelmente está faltando.
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

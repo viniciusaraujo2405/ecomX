@@ -1,11 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
-CREATE TYPE "tipoUsuario" AS ENUM ('LOJISTA', 'ADMINISTRADOR', 'CONSUMIDOR');
+CREATE TYPE "tipoUsuario" AS ENUM ('LOJISTA', 'CONSUMIDOR');
 
 -- CreateEnum
 CREATE TYPE "pedidoStatus" AS ENUM ('PENDENTE', 'PAGO', 'ENVIADO', 'ENTREGUE', 'CANCELADO');
@@ -15,9 +9,6 @@ CREATE TYPE "metodoPagamento" AS ENUM ('CARTAO', 'BOLETO', 'PIX');
 
 -- CreateEnum
 CREATE TYPE "pagamentoStatus" AS ENUM ('PENDENTE', 'APROVADO', 'RECUSADO');
-
--- DropTable
-DROP TABLE "User";
 
 -- CreateTable
 CREATE TABLE "Usuario" (
@@ -31,23 +22,13 @@ CREATE TABLE "Usuario" (
 );
 
 -- CreateTable
-CREATE TABLE "Loja" (
-    "id" TEXT NOT NULL,
-    "nome" TEXT NOT NULL,
-    "descricao" TEXT NOT NULL,
-    "idLojista" TEXT NOT NULL,
-
-    CONSTRAINT "Loja_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Produto" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "descricao" TEXT NOT NULL,
     "estoque" INTEGER NOT NULL,
     "preco" DOUBLE PRECISION NOT NULL,
-    "idLoja" TEXT NOT NULL,
+    "idVendedor" TEXT NOT NULL,
     "idCategoria" TEXT NOT NULL,
 
     CONSTRAINT "Produto_pkey" PRIMARY KEY ("id")
@@ -57,7 +38,7 @@ CREATE TABLE "Produto" (
 CREATE TABLE "Categoria" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
-    "descricao" TEXT NOT NULL,
+    "descricao" TEXT,
 
     CONSTRAINT "Categoria_pkey" PRIMARY KEY ("id")
 );
@@ -66,7 +47,6 @@ CREATE TABLE "Categoria" (
 CREATE TABLE "Pedido" (
     "id" TEXT NOT NULL,
     "idConsumidor" TEXT NOT NULL,
-    "idLoja" TEXT NOT NULL,
     "idPagamento" TEXT NOT NULL,
     "idEndereco" TEXT NOT NULL,
     "status" "pedidoStatus" NOT NULL,
@@ -156,19 +136,13 @@ CREATE UNIQUE INDEX "Pedido_idPagamento_key" ON "Pedido"("idPagamento");
 CREATE UNIQUE INDEX "Carrinho_idUsuario_key" ON "Carrinho"("idUsuario");
 
 -- AddForeignKey
-ALTER TABLE "Loja" ADD CONSTRAINT "Loja_idLojista_fkey" FOREIGN KEY ("idLojista") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Produto" ADD CONSTRAINT "Produto_idLoja_fkey" FOREIGN KEY ("idLoja") REFERENCES "Loja"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Produto" ADD CONSTRAINT "Produto_idVendedor_fkey" FOREIGN KEY ("idVendedor") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Produto" ADD CONSTRAINT "Produto_idCategoria_fkey" FOREIGN KEY ("idCategoria") REFERENCES "Categoria"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Pedido" ADD CONSTRAINT "Pedido_idConsumidor_fkey" FOREIGN KEY ("idConsumidor") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Pedido" ADD CONSTRAINT "Pedido_idLoja_fkey" FOREIGN KEY ("idLoja") REFERENCES "Loja"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Pedido" ADD CONSTRAINT "Pedido_idPagamento_fkey" FOREIGN KEY ("idPagamento") REFERENCES "Pagamento"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
