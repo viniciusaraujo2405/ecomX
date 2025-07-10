@@ -1,0 +1,239 @@
+openapi: 3.0.0
+info:
+  title: API de E-commerce - Produtos
+  description: Documentação dos endpoints para gerenciamento de produtos.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3333 # Altere para a URL base da sua API
+    description: Servidor de desenvolvimento
+
+# Define o esquema de segurança (autenticação via Token JWT)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    # Schema para um produto retornado pela API
+    Produto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID único do produto.
+          example: "clwsm1psv000008l43s1s9p5b"
+          readOnly: true
+        nome:
+          type: string
+          description: Nome do produto.
+          example: "Camisa Preta de Algodão"
+        descricao:
+          type: string
+          description: Descrição detalhada do produto.
+          example: "Camisa preta unissex, 100% algodão com reforço na gola."
+        estoque:
+          type: integer
+          description: Quantidade de itens em estoque.
+          example: 50
+        preco:
+          type: number
+          format: float
+          description: Preço do produto.
+          example: 89.90
+        urlImagem:
+          type: string
+          nullable: true
+          description: URL da imagem do produto.
+          example: "https://example.com/image.png"
+        idVendedor:
+          type: string
+          description: ID do vendedor que cadastrou o produto.
+          readOnly: true
+        idCategoria:
+          type: string
+          description: ID da categoria do produto.
+          example: "clwsm2h7a000208l42y1k7b8t"
+
+    # Schema para os dados de entrada ao criar um produto
+    ProdutoInput:
+      type: object
+      properties:
+        nome:
+          type: string
+        descricao:
+          type: string
+        estoque:
+          type: integer
+        preco:
+          type: number
+        idCategoria:
+          type: string
+        urlImagem:
+          type: string
+          nullable: true
+      required:
+        - nome
+        - descricao
+        - estoque
+        - preco
+        - idCategoria
+
+    # Schema para erros
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Mensagem de erro.
+
+security:
+  - bearerAuth: []
+
+paths:
+  # Rota para listar todos os produtos (catálogo) e criar um novo produto
+  /produtos:
+    get:
+      tags:
+        - Produtos
+      summary: Lista todos os produtos (Catálogo)
+      description: Retorna uma lista de todos os produtos disponíveis. Pode ser filtrada por categoria.
+      parameters:
+        - name: idCategoria
+          in: query
+          description: ID da categoria para filtrar os produtos.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucesso. Retorna a lista de produtos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Produto'
+        '500':
+          description: Erro interno do servidor.
+    post:
+      tags:
+        - Produtos
+      summary: Cadastra um novo produto
+      description: Cria um novo produto no sistema. Rota protegida para usuários do tipo 'VENDEDOR'.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoInput'
+      responses:
+        '201':
+          description: Produto criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+        '400':
+          description: Dados inválidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Não autenticado.
+        '403':
+          description: Não autorizado (não é um vendedor).
+
+  # Rota para listar os produtos do vendedor logado
+  /produtos/meus-produtos:
+    get:
+      tags:
+        - Produtos
+      summary: Lista os produtos do vendedor logado
+      description: Retorna uma lista de todos os produtos cadastrados pelo vendedor autenticado. Rota protegida para 'VENDEDOR'.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sucesso. Retorna a lista de produtos do vendedor.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Produto'
+        '401':
+          description: Não autenticado.
+        '403':
+          description: Não autorizado (não é um vendedor).
+
+  # Rotas para um produto específico (obter, atualizar, deletar)
+  /produtos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID do produto a ser manipulado.
+        schema:
+          type: string
+    get:
+      tags:
+        - Produtos
+      summary: Obtém um produto específico
+      description: Retorna os detalhes de um único produto pelo seu ID.
+      responses:
+        '200':
+          description: Sucesso. Retorna o produto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+        '404':
+          description: Produto não encontrado.
+    put:
+      tags:
+        - Produtos
+      summary: Atualiza um produto existente
+      description: Atualiza os dados de um produto. Apenas o vendedor proprietário do produto pode fazer isso.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoInput' # Reutiliza o mesmo schema do input
+      responses:
+        '200':
+          description: Produto atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+        '400':
+          description: Dados inválidos.
+        '401':
+          description: Não autenticado.
+        '403':
+          description: Não autorizado (não é o dono do produto).
+        '404':
+          description: Produto não encontrado.
+    delete:
+      tags:
+        - Produtos
+      summary: Deleta um produto
+      description: Remove um produto do sistema. Apenas o vendedor proprietário do produto pode fazer isso.
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Produto deletado com sucesso. Nenhum conteúdo retornado.
+        '401':
+          description: Não autenticado.
+        '403':
+          description: Não autorizado (não é o dono do produto).
+        '404':
+          description: Produto não encontrado.

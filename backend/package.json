@@ -1,0 +1,48 @@
+{
+  "devDependencies": {
+    "@types/argon2": "^0.14.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.15.18",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/yamljs": "^0.2.34",
+    "prisma": "^6.8.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.2.0",
+    "@mui/material": "^7.2.0",
+    "@prisma/client": "^6.8.0",
+    "@types/react-router-dom": "^5.3.3",
+    "argon2": "^0.43.0",
+    "axios": "^1.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "react-router-dom": "^6.30.1",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "scripts": {
+    "seed": "ts-node src/seed.ts",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc"
+  },
+  "prisma": {
+    "seed": "npx tsx src/seed.ts"
+  },
+  "name": "diretorioprojetofinal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
